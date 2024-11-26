@@ -1,35 +1,31 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { AppRoutes } from './routes/AppRoutes';
+import './App.css';
+import { Provider } from 'react-redux';
+import { store, persistor } from './store/store';
+import { PersistGate } from 'redux-persist/integration/react';
+import { ThemeProvider as StyledThemeProvider } from 'styled-components';
+import { ThemeProvider as MuiThemeProvider, CssBaseline } from '@mui/material';
+import { LightTheme } from './config/theme/LightTheme';
+import { DarkTheme } from './config/theme/DarkTheme';
+import { useAppSelector } from './store/models/hooks';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const tema = useAppSelector((state) => state.theme.theme);
+
+  const activeTheme = tema === 'dark' ? DarkTheme : LightTheme;
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <MuiThemeProvider theme={activeTheme}>
+          <StyledThemeProvider theme={activeTheme}>
+            <CssBaseline />
+            <AppRoutes />
+          </StyledThemeProvider>
+        </MuiThemeProvider>
+      </PersistGate>
+    </Provider>
+  );
 }
 
-export default App
+export default App;
